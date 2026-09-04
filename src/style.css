@@ -1,0 +1,102 @@
+/*
+ * NORD TRACE — foundation styles.
+ * Working values from docs/design-language.md (provisional tokens).
+ */
+
+:root {
+  --surface: #0a0b0d;
+  --surface-raised: #101216;
+  --ink: #e8e6df;
+  --ink-dim: #8a8f98;
+  --accent: #6f8fa8;
+  --hairline: rgba(232, 230, 223, 0.14);
+  --grid: rgba(232, 230, 223, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background:
+    linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 100% 64px,
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 64px 100%,
+    var(--surface);
+  color: var(--ink);
+  font-family:
+    ui-sans-serif,
+    -apple-system,
+    "Helvetica Neue",
+    "Segoe UI",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.stage {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px clamp(24px, 6vw, 96px);
+}
+
+.kicker {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.42em;
+  color: var(--accent);
+}
+
+.wordmark {
+  margin: 24px 0 8px;
+  font-size: clamp(44px, 9vw, 96px);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.tagline {
+  margin: 0;
+  color: var(--ink-dim);
+  font-size: clamp(15px, 2vw, 19px);
+  letter-spacing: 0.04em;
+}
+
+.status {
+  border-top: 1px solid var(--hairline);
+  padding-top: 20px;
+  max-width: 560px;
+}
+
+.status-line {
+  margin: 0 0 8px;
+  font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  color: var(--accent);
+}
+
+.status-note {
+  margin: 0;
+  color: var(--ink-dim);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.baseline {
+  border-top: 1px solid var(--hairline);
+  padding-top: 16px;
+}
+
+.baseline p {
+  margin: 0;
+  color: var(--ink-dim);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
