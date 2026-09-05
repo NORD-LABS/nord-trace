@@ -6,7 +6,7 @@ N O R D   T R A C E
 Turn routes into stories.
 ```
 
-NORD TRACE is an experimental cinematic route-visualization system by NORD LABS.
+NORD TRACE is a cinematic route-visualization instrument by NORD LABS.
 It treats GPS movement as visual material: position, elevation, velocity, time,
 coordinates and geography — composed with the restraint of technical cartography
 and the pacing of a cinematic title sequence.
@@ -14,9 +14,10 @@ and the pacing of a cinematic title sequence.
 Not a fitness dashboard. Not a map with a line on it. A visual instrument for
 routes.
 
-**Status: early development / experimental.** The architecture, APIs and product
-direction described here are provisional and will change. See
-[Repository status](#repository-status).
+**Status: V1.** The core experience is implemented, tested and verified in the
+browser: import a trace, see it on a dark cinematic map, inspect its statistics,
+play it, scrub it, change camera and presentation modes, present fullscreen and
+export a still. See [V1](#v1).
 
 ---
 
@@ -35,94 +36,144 @@ The intent is a premium creative instrument for people who move with a GPS
 logger and care about how that movement is presented: cyclists, hikers, photo
 walkers, drone pilots, travellers.
 
-## Vision
+## V1
 
-Long-term product direction. **These are roadmap concepts, not current
-features** — each lands only when it exists in this repository:
+Implemented and verified (typechecked, unit-tested, exercised in a real
+browser at desktop and mobile sizes):
 
-- GPX and GeoJSON trace import
-- animated route playback with a cinematic map camera
-- altitude and velocity visualization
-- telemetry readouts — timestamps, coordinates, route progress
-- customizable visual themes
-- vertical and social formats alongside cinematic widescreen
-- eventual still-image and video output
+- **GPX import** — `<trk>/<trkseg>/<trkpt>` with optional elevation and
+  timestamps, multiple segments, `<rtept>` fallback; malformed XML, empty
+  tracks and missing metadata fail cleanly, never crash.
+- **GeoJSON import** — LineString, MultiLineString, Feature and
+  FeatureCollection; polygons and non-route geometries are rejected cleanly;
+  names read from `name`/`title` properties.
+- **Local processing** — files are read and parsed entirely in the browser.
+  Nothing is uploaded; there is no server, account or telemetry.
+- **Route visualization** — a bespoke dark vector style over
+  [OpenFreeMap](https://openfreemap.org) tiles (keyless, CORS-open; attribution
+  preserved on screen and in exports). Thin cold-white base trace, brighter
+  animated progress stroke, restrained glow, direction chevrons, ringed
+  endpoint markers.
+- **Route statistics** — geodesic distance, recorded duration, min/max
+  elevation, noise-resistant ascent/descent, average speed, bounds. Statistics
+  the data cannot support simply don't appear.
+- **Animated playback** — single-source-of-truth engine at 0.5×–8×, with
+  recorded-time progress when timestamps exist and distance-based progress
+  when they don't.
+- **Timeline scrubbing** — native range input under a custom hairline;
+  pointer, touch and keyboard operable; live telemetry follows.
+- **Camera modes** — OVERVIEW (full-route frame), FOLLOW (damped tracking),
+  CINEMATIC (slow bearing drift + mid-route zoom arc). Reduced-motion users
+  get pan-only, never rotation.
+- **Presentation modes** — RIDE, WALK, FLIGHT, JOURNEY presets changing
+  pacing, camera default, telemetry emphasis and route treatment. FLIGHT
+  carries a "visualization only — not for navigation" disclaimer.
+- **Elevation profile** — a restrained SVG area profile with a playback
+  cursor, shown only when the trace carries elevation.
+- **Cinematic presentation** — fullscreen mode hiding all chrome, subtle
+  transport on hover, Escape to exit.
+- **Still export** — current composition as a 16:9, 9:16 or 1:1 PNG,
+  composited client-side with route overlay, typography and required map
+  attribution. Verified working.
+- **Demo trace** — a deterministic, repository-generated synthetic route
+  (`LOAD DEMO`); no claim that it represents a real journey.
+- **Responsive interface** — desktop through mobile (verified at 1440 and
+  390 px), no horizontal overflow, touch-friendly controls.
+- **Accessibility** — semantic buttons, labeled controls, keyboard playback
+  (Space/R/F/E/M/C), visible focus states, `prefers-reduced-motion` support.
+
+Not yet (future work — see [Roadmap](#roadmap)):
+
+- **Video export** — not implemented. The render path (normalized progress →
+  sample → frame state) is already a pure function, which is the groundwork
+  deterministic frame-by-frame video rendering will need. MediaRecorder
+  capture is deliberately not shipped as a unreliable stopgap.
+- Visual themes, typography overlays, aspect-ratio composition frames,
+  user-audio timing workflows.
 
 ## Modes
 
-Planned product lenses for different kinds of movement. These are product
-concepts, not implemented features.
+Product lenses over the same engine — presentation only, route data is never
+mutated:
 
 | Mode | Intent |
 | --- | --- |
 | **RIDE** | Cycling and road movement — pace, gradient, distance. |
 | **WALK** | Photo walks, hikes and urban exploration — slower time, a sense of place. |
-| **FLIGHT** | Drone and aviation route visualization — altitude, telemetry, airspace. |
+| **FLIGHT** | Drone and aviation route visualization — altitude, telemetry, airspace. *Visualization only — not for navigation.* |
 | **JOURNEY** | Longer travel and road-trip traces — narrative over distance. |
 
 ## Design language
 
 Deep black surfaces. Off-white typography. Restrained cold-blue accents.
-Technical grid systems. Geographic coordinates, topographic lines and thin
-telemetry graphics treated as first-class design elements. Typography-led
+Technical grid systems. Geographic coordinates, thin telemetry graphics and
+hairline rules treated as first-class design elements. Typography-led
 hierarchy, minimal controls, cinematic motion that feels deliberate and
 editorial rather than flashy.
 
-The full direction — surfaces, type, motion principles, do-and-don’t list —
-lives in [`docs/design-language.md`](docs/design-language.md).
+The full system — palette, type, spacing, controls, motion, camera behavior,
+mobile adaptation — lives in
+[`docs/design-language.md`](docs/design-language.md).
 
 ## Architecture
 
-**Provisional.** Deliberately small until implementation requirements justify
-more:
+TypeScript (strict), Vite, browser-first, no backend, no framework.
 
-- **TypeScript**, strict mode
-- **Vite** as the minimal web foundation
-- **MapLibre GL JS** for mapping
-- **Three.js**, selectively, where custom 3D or cinematic rendering earns its place
-- **Web Workers** if route processing eventually needs them
-- local-first, browser-native GPX/GeoJSON parsing where practical
+- **MapLibre GL JS** (lazy-loaded; ~19 kB gzip of app code before the map
+  chunk is fetched) rendering a custom OpenMapTiles-schema dark style
+- **Vanilla DOM** UI — no React, no component library
+- **Web Workers**: not needed at V1 trace sizes; module boundary is ready
+- Local-first GPX/GeoJSON parsing with `DOMParser`/`JSON.parse`
 
-No authentication, database, backend service, analytics or large UI framework —
-none are justified at this stage. Rationale and open questions:
-[`docs/architecture.md`](docs/architecture.md).
+Data flow: `file → parse → normalize → Trace (immutable) → playback + map +
+UI`, with playback progress owned by a single engine and consumed by
+everything else. Rationale, trace model, performance strategy and known
+limitations: [`docs/architecture.md`](docs/architecture.md).
+
+## Privacy
+
+Route files are processed locally in your browser and are never uploaded.
+There is no account, no database, no analytics, no server-side anything. The
+only network requests are map tiles from OpenFreeMap (keyless public
+infrastructure) and fonts/sprites referenced by the map style.
 
 ## Repository status
 
-**Early development / experimental.** The licence and documentation are real and
-current; the code is a minimal web foundation. APIs, architecture and product
-direction may change at any time, without notice or migration.
-
 | State | Items |
 | --- | --- |
-| Implemented | repository, documentation, licence, minimal Vite + TypeScript foundation |
-| Planned | everything in the [roadmap](#roadmap) below |
-| Experimental | architecture decisions in [`docs/architecture.md`](docs/architecture.md) |
-
-Nothing else should be assumed to work.
+| Implemented | V1 experience (see [V1](#v1)), documentation, licence |
+| Planned | video export, themes, composition overlays (see [Roadmap](#roadmap)) |
+| Experimental | mode tuning, camera pacing constants |
 
 ## Roadmap
 
 Directional phases. **No release dates are promised.**
 
-**Phase 0 — Foundation**
-Repository, design direction, GPX/GeoJSON file-format research, architecture
-experiments.
-
-**Phase 1 — Trace**
-GPX import. GeoJSON import. Route normalization. Basic route rendering.
-Timeline playback.
-
-**Phase 2 — Motion**
-Cinematic camera. Altitude visualization. Speed visualization. Playback
-controls. Animation presets.
+**Phase 2 — Motion** (current)
+Camera choreography refinements. Altitude/speed-driven visual treatments.
+Mode tuning from real traces.
 
 **Phase 3 — Composition**
-Design presets. Typography overlays. Coordinates and timestamps. Aspect-ratio
-presets. Social-media composition modes.
+Typography overlays. Coordinates/timestamps as composed elements.
+Aspect-ratio frames. Social formats as reframed compositions.
 
 **Phase 4 — Export**
-Still-image export. Video-rendering experiments. Deterministic visual output.
+Deterministic still rendering at fixed seeds/frames. Video-rendering
+experiments building on the pure render path.
+
+## Development
+
+```bash
+npm install
+npm run dev        # dev server
+npm run build      # typecheck + production build
+npm run preview    # serve the production build
+npm test           # vitest suite (90 tests)
+npm run typecheck  # tsc --noEmit
+```
+
+CI (`.github/workflows/ci.yml`) runs typecheck, tests and the production
+build on every push and pull request.
 
 ## Repository layout
 
@@ -133,13 +184,24 @@ nord-trace/
 │   ├── architecture.md
 │   └── design-language.md
 ├── src/
+│   ├── app/          # controller, state, file ingestion
+│   ├── core/         # trace model, geodesic math, sampling, formatters
+│   ├── demo/         # deterministic synthetic demo trace
+│   ├── export/       # still composition export
+│   ├── geojson/      # GeoJSON parsing/normalization
+│   ├── gpx/          # GPX parsing
+│   ├── map/          # MapLibre runtime, style, trace layers, camera, markers
+│   ├── modes/        # product mode presets
+│   ├── playback/     # playback engine (single source of truth)
+│   ├── ui/           # landing, workspace, telemetry, transport, settings
 │   ├── main.ts
-│   └── style.css
+│   └── style.css     # the design system
+├── tests/            # vitest: parsers, geo math, playback, formatters
 ├── index.html
 ├── package.json
 ├── tsconfig.json
-├── .editorconfig
-├── .gitignore
+├── vitest.config.ts
+├── .github/workflows/ci.yml
 ├── CONTRIBUTING.md
 ├── LICENSE.md
 └── SECURITY.md
@@ -160,8 +222,8 @@ sublicense, reverse engineer, scrape, or use this repository for
 artificial-intelligence or machine-learning training except where expressly
 authorized in writing by ISO NORD CA or unavoidably permitted by applicable law.
 
-Public GitHub repositories remain subject to GitHub’s Terms of Service,
-including GitHub’s platform-level viewing and forking permissions.
+Public GitHub repositories remain subject to GitHub's Terms of Service,
+including GitHub's platform-level viewing and forking permissions.
 
 Commercial and other licensing requests: **info@theo-picture.com**
 

@@ -170,15 +170,16 @@ export class AppController {
           });
         }
         this.map = await this.mapPromise;
-        await this.map.ready();
       } catch (err) {
         console.warn('[nord-trace] map init failed', err);
-        toast('Map failed to load — check your connection. Statistics remain available.', 'error', 6000);
+        toast('Map failed to initialize — statistics remain available.', 'error', 6000);
         this.map = null;
         this.mapPromise = null;
         return;
       }
     }
+    // Queued inside the map if the style is still loading; applied the
+    // moment tiles are ready. A slow network never blocks the session.
     this.map.setTrace(trace);
     this.map.resize();
   }

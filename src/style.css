@@ -390,7 +390,10 @@ button {
   min-height: 0;
 }
 
-.nt-map {
+/* Two-class specificity: beats MapLibre's own `.maplibregl-map`
+   {position: relative} rule, which loads after this stylesheet and
+   would otherwise collapse the map container to zero height. */
+.nt-stage .nt-map {
   position: absolute;
   inset: 0;
 }
@@ -988,7 +991,12 @@ body.is-presentation {
   .nt-identity {
     flex-direction: column;
     gap: 1px;
-    align-items: flex-start;
+    /* keep stretch so the name truncates instead of overlapping the buttons */
+    align-items: stretch;
+  }
+
+  .nt-trace-name {
+    max-width: 100%;
   }
 
   .nt-trace-coords {
@@ -1000,6 +1008,11 @@ body.is-presentation {
   }
 
   .nt-btn-text span {
+    display: none;
+  }
+
+  .nt-tick-tl,
+  .nt-tick-tr {
     display: none;
   }
 
