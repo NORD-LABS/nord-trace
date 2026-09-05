@@ -1,0 +1,37 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nord-trace:static-1
+    container_name: nord-trace
+    restart: unless-stopped
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m
+    networks:
+      - devpush
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/health || exit 1"]
+      interval: 30s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=devpush_default
+      - traefik.http.routers.nord-trace.entrypoints=websecure
+      - traefik.http.routers.nord-trace.priority=10
+      - traefik.http.routers.nord-trace.rule=Host(`trace.iso-nord.ca`)
+      - traefik.http.routers.nord-trace.tls=true
+      - traefik.http.routers.nord-trace.tls.certresolver=le
+      - traefik.http.services.nord-trace.loadbalancer.server.port=8080
+
+networks:
+  devpush:
+    external: true
+    name: devpush_default
