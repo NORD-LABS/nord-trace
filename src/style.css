@@ -1,102 +1,1117 @@
-/*
- * NORD TRACE — foundation styles.
- * Working values from docs/design-language.md (provisional tokens).
- */
+/* ==========================================================================
+   NORD TRACE — design system
+   Deep black surfaces, off-white ink, one cold accent, hairlines,
+   tabular numerals, editorial tracking. The trace is the brightest
+   element in any composition.
+   ========================================================================== */
 
 :root {
-  --surface: #0a0b0d;
-  --surface-raised: #101216;
-  --ink: #e8e6df;
-  --ink-dim: #8a8f98;
-  --accent: #6f8fa8;
-  --hairline: rgba(232, 230, 223, 0.14);
-  --grid: rgba(232, 230, 223, 0.05);
+  /* surfaces */
+  --nt-bg: #050607;
+  --nt-surface: #0a0b0d;
+  --nt-surface-raised: #101216;
+  --nt-hairline: rgba(232, 230, 223, 0.14);
+  --nt-hairline-soft: rgba(232, 230, 223, 0.07);
+
+  /* ink */
+  --nt-ink: #f2f1ec;
+  --nt-ink-dim: #8a8f98;
+  --nt-ink-faint: #565b63;
+
+  /* accent — restrained cold blue */
+  --nt-accent: #6f8fa8;
+  --nt-accent-soft: rgba(111, 143, 168, 0.35);
+
+  /* trace */
+  --nt-trace: #f2f1ec;
+  --nt-trace-ember: #8fb2ce;
+
+  /* type */
+  --nt-font: "Inter", "SF Pro Text", -apple-system, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+  --nt-font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, monospace;
+
+  /* metrics */
+  --nt-header-h: 56px;
+  --nt-radius: 2px;
+  --nt-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-* {
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 html,
 body {
   margin: 0;
-  min-height: 100%;
-}
-
-body {
-  background:
-    linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 100% 64px,
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 64px 100%,
-    var(--surface);
-  color: var(--ink);
-  font-family:
-    ui-sans-serif,
-    -apple-system,
-    "Helvetica Neue",
-    "Segoe UI",
-    sans-serif;
+  padding: 0;
+  height: 100%;
+  background: var(--nt-bg);
+  color: var(--nt-ink);
+  font-family: var(--nt-font);
+  font-size: 15px;
+  line-height: 1.45;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
 }
 
-.stage {
-  min-height: 100vh;
+#app {
+  height: 100dvh;
+  width: 100%;
+}
+
+button {
+  font-family: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 1px solid var(--nt-accent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--nt-accent-soft);
+  color: var(--nt-ink);
+}
+
+.nt-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+
+.nt-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--nt-radius);
+  color: var(--nt-ink-dim);
+  transition: color 160ms var(--nt-ease), border-color 160ms var(--nt-ease);
+}
+
+.nt-btn:hover,
+.nt-btn:focus-visible {
+  color: var(--nt-ink);
+}
+
+.nt-btn-text {
+  letter-spacing: 0.14em;
+  font-size: 11px;
+}
+
+.nt-btn-primary {
+  padding: 12px 26px;
+  border: 1px solid var(--nt-ink);
+  border-radius: var(--nt-radius);
+  color: var(--nt-ink);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  transition: background 180ms var(--nt-ease), color 180ms var(--nt-ease);
+}
+
+.nt-btn-primary:hover,
+.nt-btn-primary:focus-visible {
+  background: var(--nt-ink);
+  color: var(--nt-bg);
+}
+
+.nt-btn-secondary {
+  padding: 12px 26px;
+  border: 1px solid var(--nt-hairline);
+  border-radius: var(--nt-radius);
+  color: var(--nt-ink-dim);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  transition: border-color 180ms var(--nt-ease), color 180ms var(--nt-ease);
+}
+
+.nt-btn-secondary:hover,
+.nt-btn-secondary:focus-visible {
+  border-color: var(--nt-ink);
+  color: var(--nt-ink);
+}
+
+/* --------------------------------------------------------------------------
+   Landing / empty state
+   -------------------------------------------------------------------------- */
+
+.nt-landing {
+  position: relative;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  animation: nt-fade-in 900ms var(--nt-ease);
+}
+
+.nt-landing-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.nt-landing-content {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 48px clamp(24px, 6vw, 96px);
+  align-items: center;
+  text-align: center;
+  padding: 24px;
+  max-width: 720px;
 }
 
-.kicker {
-  margin: 0;
+.nt-kicker {
+  margin: 0 0 18px;
   font-size: 11px;
   letter-spacing: 0.42em;
-  color: var(--accent);
+  color: var(--nt-ink-faint);
 }
 
-.wordmark {
-  margin: 24px 0 8px;
-  font-size: clamp(44px, 9vw, 96px);
-  font-weight: 600;
-  letter-spacing: 0.08em;
+.nt-wordmark {
+  margin: 0;
+  font-size: clamp(38px, 7.2vw, 84px);
+  font-weight: 650;
+  letter-spacing: 0.16em;
+  text-indent: 0.16em; /* optically recenter tracked caps */
   line-height: 1;
+  color: var(--nt-ink);
 }
 
-.tagline {
-  margin: 0;
-  color: var(--ink-dim);
-  font-size: clamp(15px, 2vw, 19px);
-  letter-spacing: 0.04em;
+.nt-headline {
+  margin: 22px 0 0;
+  font-size: clamp(12px, 1.6vw, 15px);
+  font-weight: 500;
+  letter-spacing: 0.34em;
+  text-indent: 0.34em;
+  line-height: 1.9;
+  color: var(--nt-ink-dim);
 }
 
-.status {
-  border-top: 1px solid var(--hairline);
-  padding-top: 20px;
-  max-width: 560px;
+.nt-dropzone {
+  margin-top: 44px;
+  padding: 30px 44px;
+  border: 1px solid var(--nt-hairline);
+  border-radius: var(--nt-radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  background: rgba(10, 11, 13, 0.55);
+  backdrop-filter: blur(6px);
+  transition: border-color 200ms var(--nt-ease), background 200ms var(--nt-ease);
 }
 
-.status-line {
-  margin: 0 0 8px;
-  font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
+.nt-dropzone:hover,
+.nt-dropzone:focus-visible,
+.nt-dropzone.is-dragover {
+  border-color: var(--nt-accent);
+  background: rgba(16, 18, 22, 0.75);
+}
+
+.nt-drop-hint {
   font-size: 12px;
-  letter-spacing: 0.28em;
-  color: var(--accent);
+  letter-spacing: 0.3em;
+  color: var(--nt-ink);
 }
 
-.status-note {
-  margin: 0;
-  color: var(--ink-dim);
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.baseline {
-  border-top: 1px solid var(--hairline);
-  padding-top: 16px;
-}
-
-.baseline p {
-  margin: 0;
-  color: var(--ink-dim);
+.nt-drop-or {
   font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--nt-ink-faint);
+}
+
+.nt-landing-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.nt-privacy {
+  margin: 26px 0 0;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--nt-ink-faint);
+}
+
+.nt-landing-footer {
+  position: absolute;
+  z-index: 1;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 24px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--nt-ink-faint);
+}
+
+@keyframes nt-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Workspace frame
+   -------------------------------------------------------------------------- */
+
+.nt-workspace {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  animation: nt-fade-in 600ms var(--nt-ease);
+}
+
+.nt-header {
+  position: relative;
+  z-index: 20;
+  height: var(--nt-header-h);
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--nt-hairline-soft);
+  background: rgba(5, 6, 7, 0.82);
+  backdrop-filter: blur(10px);
+}
+
+.nt-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex: none;
+}
+
+.nt-brand-mark {
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: 0.24em;
+  color: var(--nt-ink);
+}
+
+.nt-brand-org {
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: var(--nt-ink-faint);
+}
+
+.nt-identity {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.nt-trace-name {
+  font-size: 12px;
+  font-weight: 550;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--nt-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nt-trace-coords {
+  font-family: var(--nt-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--nt-ink-faint);
+  white-space: nowrap;
+}
+
+.nt-header-right {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nt-mode-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-right: 10px;
+}
+
+.nt-mode-voice {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.3em;
+  color: var(--nt-accent);
+}
+
+.nt-mode-caption {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--nt-ink-faint);
+}
+
+/* --------------------------------------------------------------------------
+   Stage / map
+   -------------------------------------------------------------------------- */
+
+.nt-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Two-class specificity: beats MapLibre's own `.maplibregl-map`
+   {position: relative} rule, which loads after this stylesheet and
+   would otherwise collapse the map container to zero height. */
+.nt-stage .nt-map {
+  position: absolute;
+  inset: 0;
+}
+
+.nt-map .maplibregl-canvas {
+  outline: none;
+}
+
+/* corner ticks — restrained HUD framing */
+.nt-tick {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0.5;
+}
+
+.nt-tick-tl {
+  top: 14px;
+  left: 14px;
+  border-top: 1px solid var(--nt-ink-dim);
+  border-left: 1px solid var(--nt-ink-dim);
+}
+
+.nt-tick-tr {
+  top: 14px;
+  right: 14px;
+  border-top: 1px solid var(--nt-ink-dim);
+  border-right: 1px solid var(--nt-ink-dim);
+}
+
+.nt-tick-bl {
+  bottom: 14px;
+  left: 14px;
+  border-bottom: 1px solid var(--nt-ink-dim);
+  border-left: 1px solid var(--nt-ink-dim);
+}
+
+.nt-tick-br {
+  bottom: 14px;
+  right: 14px;
+  border-bottom: 1px solid var(--nt-ink-dim);
+  border-right: 1px solid var(--nt-ink-dim);
+}
+
+.nt-hud {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  z-index: 6;
+  display: flex;
+  gap: 18px;
+  pointer-events: none;
+  font-family: var(--nt-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--nt-ink-dim);
+  text-shadow: 0 1px 3px rgba(5, 6, 7, 0.9);
+}
+
+/* maplibre attribution — dark, quiet, unhidden */
+.nt-map .maplibregl-ctrl-attrib {
+  background: rgba(5, 6, 7, 0.7);
+  color: var(--nt-ink-faint);
+  font-size: 10px;
+  border-radius: 2px 0 0 0;
+}
+
+.nt-map .maplibregl-ctrl-attrib a {
+  color: var(--nt-ink-dim);
+}
+
+.nt-map .maplibregl-ctrl-attrib-button {
+  filter: invert(0.8);
+}
+
+/* --------------------------------------------------------------------------
+   Dock: telemetry + elevation + transport
+   -------------------------------------------------------------------------- */
+
+.nt-dock {
+  position: relative;
+  z-index: 10;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 6px 24px 18px;
+  background: linear-gradient(180deg, rgba(5, 6, 7, 0) 0%, rgba(5, 6, 7, 0.88) 34%, #050607 72%);
+  pointer-events: none;
+}
+
+.nt-dock > * {
+  pointer-events: auto;
+}
+
+.nt-stats {
+  display: flex;
+  gap: clamp(20px, 4vw, 56px);
+  align-items: flex-end;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.nt-stats::-webkit-scrollbar {
+  display: none;
+}
+
+.nt-stat {
+  flex: none;
+  min-width: 0;
+}
+
+.nt-stat-label {
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  color: var(--nt-ink-faint);
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+
+.nt-stat-value {
+  font-size: clamp(17px, 2vw, 24px);
+  font-weight: 550;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--nt-ink);
+  white-space: nowrap;
+}
+
+/* elevation profile */
+.nt-elev {
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: height 300ms var(--nt-ease), opacity 300ms var(--nt-ease);
+}
+
+.nt-elev.is-visible {
+  height: 64px;
+  opacity: 1;
+}
+
+.nt-elev-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.nt-elev-area {
+  fill: rgba(143, 178, 206, 0.09);
+}
+
+.nt-elev-line {
+  fill: none;
+  stroke: rgba(232, 230, 223, 0.4);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.nt-elev-cursor {
+  stroke: var(--nt-ink);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+/* --------------------------------------------------------------------------
+   Transport
+   -------------------------------------------------------------------------- */
+
+.nt-transport {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.nt-transport-left,
+.nt-transport-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+
+.nt-btn.is-playing,
+.nt-transport .nt-btn {
+  min-width: 38px;
+  justify-content: center;
+}
+
+.nt-speed {
+  min-width: 44px;
+  padding: 7px 8px;
+  border: 1px solid var(--nt-hairline);
+  border-radius: var(--nt-radius);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  font-variant-numeric: tabular-nums;
+  color: var(--nt-ink-dim);
+  transition: color 160ms var(--nt-ease), border-color 160ms var(--nt-ease);
+}
+
+.nt-speed:hover,
+.nt-speed:focus-visible {
+  color: var(--nt-ink);
+  border-color: var(--nt-ink);
+}
+
+.nt-scrub {
+  position: relative;
+  flex: 1;
+  height: 28px;
+  display: flex;
+  align-items: center;
+}
+
+.nt-scrub::before {
+  /* the bare track */
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--nt-hairline);
+}
+
+.nt-scrub-fill {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 1px;
+  width: 0%;
+  background: var(--nt-ink);
+  box-shadow: 0 0 8px rgba(242, 241, 236, 0.55);
+}
+
+.nt-scrub-native {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+.nt-scrub-native:focus-visible {
+  outline: none;
+}
+
+.nt-scrub:has(.nt-scrub-native:focus-visible)::after {
+  content: "";
+  position: absolute;
+  inset: -6px 0;
+  border: 1px solid var(--nt-accent);
+  pointer-events: none;
+}
+
+.nt-scrub-knob {
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--nt-ink);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px rgba(242, 241, 236, 0.7);
+  pointer-events: none;
+  transition: width 120ms var(--nt-ease), height 120ms var(--nt-ease);
+}
+
+.nt-scrub:hover .nt-scrub-knob {
+  width: 12px;
+  height: 12px;
+}
+
+.nt-time {
+  flex: none;
+  font-family: var(--nt-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  color: var(--nt-ink-dim);
+  min-width: 96px;
+  text-align: center;
+}
+
+.nt-time span:first-child {
+  color: var(--nt-ink);
+}
+
+/* --------------------------------------------------------------------------
+   Settings panel
+   -------------------------------------------------------------------------- */
+
+.nt-settings {
+  position: absolute;
+  top: calc(var(--nt-header-h) + 8px);
+  right: 16px;
+  z-index: 40;
+  width: 280px;
+  padding: 18px;
+  background: var(--nt-surface-raised);
+  border: 1px solid var(--nt-hairline);
+  border-radius: var(--nt-radius);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nt-settings[hidden] {
+  display: none;
+}
+
+.nt-settings-title {
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: var(--nt-ink-faint);
+}
+
+.nt-seg {
+  display: flex;
+  border: 1px solid var(--nt-hairline);
+  border-radius: var(--nt-radius);
+  overflow: hidden;
+}
+
+.nt-seg-btn {
+  flex: 1;
+  padding: 8px 4px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--nt-ink-dim);
+  border-right: 1px solid var(--nt-hairline);
+  transition: color 140ms var(--nt-ease), background 140ms var(--nt-ease);
+}
+
+.nt-seg-btn:last-child {
+  border-right: none;
+}
+
+.nt-seg-btn:hover,
+.nt-seg-btn:focus-visible {
+  color: var(--nt-ink);
+}
+
+.nt-seg-btn.is-active {
+  color: var(--nt-bg);
+  background: var(--nt-ink);
+}
+
+.nt-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nt-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
   letter-spacing: 0.06em;
+  color: var(--nt-ink-dim);
+  cursor: pointer;
+}
+
+.nt-switch-row:hover {
+  color: var(--nt-ink);
+}
+
+.nt-switch {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 30px;
+  height: 16px;
+  border: 1px solid var(--nt-hairline);
+  border-radius: 8px;
+  position: relative;
+  cursor: pointer;
+  transition: background 160ms var(--nt-ease), border-color 160ms var(--nt-ease);
+}
+
+.nt-switch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--nt-ink-dim);
+  transition: transform 160ms var(--nt-ease), background 160ms var(--nt-ease);
+}
+
+.nt-switch:checked {
+  border-color: var(--nt-accent);
+  background: var(--nt-accent-soft);
+}
+
+.nt-switch:checked::after {
+  transform: translateX(14px);
+  background: var(--nt-ink);
+}
+
+.nt-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--nt-ink-dim);
+}
+
+.nt-slider-row span {
+  flex: none;
+}
+
+.nt-slider-row input[type="range"] {
+  flex: 1;
+  accent-color: var(--nt-accent);
+  height: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Markers
+   -------------------------------------------------------------------------- */
+
+.nt-marker {
+  pointer-events: none;
+}
+
+.nt-marker-endpoint {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid var(--nt-trace);
+  background: var(--nt-bg);
+  box-shadow: 0 0 6px rgba(242, 241, 236, 0.4);
+}
+
+.nt-marker-end {
+  background: var(--nt-trace);
+}
+
+.nt-marker-current {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.18),
+    0 0 14px rgba(242, 241, 236, 0.8);
+  transition: transform 200ms var(--nt-ease);
+}
+
+.nt-marker-current.is-playing {
+  animation: nt-pulse 2.2s ease-out infinite;
+}
+
+@keyframes nt-pulse {
+  0% {
+    box-shadow:
+      0 0 0 3px rgba(255, 255, 255, 0.18),
+      0 0 14px rgba(242, 241, 236, 0.8);
+  }
+  55% {
+    box-shadow:
+      0 0 0 9px rgba(255, 255, 255, 0.05),
+      0 0 14px rgba(242, 241, 236, 0.8);
+  }
+  100% {
+    box-shadow:
+      0 0 0 3px rgba(255, 255, 255, 0.18),
+      0 0 14px rgba(242, 241, 236, 0.8);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Toast
+   -------------------------------------------------------------------------- */
+
+.nt-toast-region {
+  position: fixed;
+  top: calc(var(--nt-header-h) + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nt-toast {
+  padding: 10px 18px;
+  background: var(--nt-surface-raised);
+  border: 1px solid var(--nt-hairline);
+  border-radius: var(--nt-radius);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: var(--nt-ink);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 260ms var(--nt-ease), transform 260ms var(--nt-ease);
+  max-width: min(92vw, 480px);
+  text-align: center;
+}
+
+.nt-toast.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.nt-toast-error {
+  border-color: rgba(196, 120, 104, 0.5);
+}
+
+.nt-toast-success {
+  border-color: var(--nt-accent);
+}
+
+/* --------------------------------------------------------------------------
+   Presentation mode
+   -------------------------------------------------------------------------- */
+
+body.is-presentation {
+  background: #000;
+}
+
+.nt-workspace.is-presentation .nt-header,
+.nt-workspace.is-presentation .nt-telemetry-block,
+.nt-workspace.is-presentation .nt-elev,
+.nt-workspace.is-presentation .nt-disclaimer {
+  display: none;
+}
+
+.nt-workspace.is-presentation .nt-dock {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 18px 28px 14px;
+  background: linear-gradient(180deg, rgba(5, 6, 7, 0) 0%, rgba(5, 6, 7, 0.7) 60%);
+  opacity: 0.32;
+  transition: opacity 260ms var(--nt-ease);
+}
+
+.nt-workspace.is-presentation .nt-dock:hover,
+.nt-workspace.is-presentation .nt-dock:focus-within {
+  opacity: 1;
+}
+
+.nt-workspace.is-presentation .nt-tick {
+  opacity: 0.28;
+}
+
+.nt-disclaimer {
+  position: absolute;
+  bottom: 8px;
+  left: 24px;
+  z-index: 12;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--nt-ink-faint);
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1024px) {
+  .nt-mode-caption {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --nt-header-h: 50px;
+  }
+
+  .nt-header {
+    gap: 14px;
+    padding: 0 14px;
+  }
+
+  .nt-identity {
+    flex-direction: column;
+    gap: 1px;
+    /* keep stretch so the name truncates instead of overlapping the buttons */
+    align-items: stretch;
+  }
+
+  .nt-trace-name {
+    max-width: 100%;
+  }
+
+  .nt-trace-coords {
+    display: none;
+  }
+
+  .nt-mode-wrap {
+    display: none;
+  }
+
+  .nt-btn-text span {
+    display: none;
+  }
+
+  .nt-tick-tl,
+  .nt-tick-tr {
+    display: none;
+  }
+
+  .nt-hud {
+    top: 10px;
+    right: 12px;
+    gap: 10px;
+    font-size: 9px;
+  }
+
+  .nt-hud span:nth-child(2),
+  .nt-hud span:last-child {
+    display: none;
+  }
+
+  .nt-dock {
+    padding: 4px 14px 12px;
+    gap: 10px;
+  }
+
+  .nt-stats {
+    gap: 18px;
+  }
+
+  .nt-stat-value {
+    font-size: 16px;
+  }
+
+  .nt-transport {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .nt-scrub {
+    order: 5;
+    flex-basis: 100%;
+  }
+
+  .nt-time {
+    min-width: 0;
+    text-align: right;
+  }
+
+  .nt-landing-footer {
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 430px) {
+  .nt-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
+    overflow: visible;
+  }
+
+  .nt-stat-value {
+    font-size: 15px;
+  }
+
+  .nt-dropzone {
+    padding: 22px 20px;
+    width: 100%;
+  }
+
+  .nt-landing-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .nt-landing-actions .nt-btn-primary,
+  .nt-landing-actions .nt-btn-secondary {
+    width: 100%;
+  }
+
+  .nt-settings {
+    right: 8px;
+    left: 8px;
+    width: auto;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .nt-marker-current.is-playing {
+    animation: none;
+  }
 }
